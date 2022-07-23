@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 import Users from './user/pages/Users'
-import NewPlace from './places/pages/NewPlaces';
+import NewPlace from './places/pages/NewPlace';
 import UserPlaces from './places/pages/UserPlaces';
 import MainNavigation from '../src/shared/components/Navigation/MainNavigation';
 
