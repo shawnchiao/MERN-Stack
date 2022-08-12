@@ -1,5 +1,6 @@
 const express = require('express');
 const HttpError = require('./models/http-error');
+const mongoose  = require('mongoose');
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
@@ -27,5 +28,13 @@ app.use((error, req, res, next) => {
 });
 
 
-
-app.listen(5000);
+mongoose.connect(
+  "mongodb+srv://shawnjoe:asdf8869@cluster0.vidsobg.mongodb.net/KKK?retryWrites=true&w=majority",
+  () => {
+    app.listen(5000);
+    console.log('connected to database');
+  },
+  (err) => {
+    console.log(err);
+  }
+  );
