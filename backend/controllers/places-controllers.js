@@ -99,23 +99,32 @@ const updatePlace = async (req, res, next) => {
 
   const { title, description } = req.body;
   const placeId = req.params.pid;
-  let updatedPlace;
-  try {
-    updatedPlace = await PlaceSchema.findById(placeId);
 
-    updatedPlace.title = title;
-    updatedPlace.description = description;
+  try {
+    PlaceSchema.findByIdAndUpdate(placeId, {
+      title, description
+    })
   } catch (err) {
     const error = new HttpError('Somthing went wrong, could not update the place.', 500)
     return next(error);
   };
+  // let updatedPlace;
+  // try {
+  //   updatedPlace = await PlaceSchema.findById(placeId);
 
-  try {
-    await updatedPlace.save();
-  } catch (err) {
-    const error = new HttpError('Somthing went wrong, could not update the place.', 500)
-    return next(error);
-  };
+  //   updatedPlace.title = title;
+  //   updatedPlace.description = description;
+  // } catch (err) {
+  //   const error = new HttpError('Somthing went wrong, could not update the place.', 500)
+  //   return next(error);
+  // };
+
+  // try {
+  //   await updatedPlace.save();
+  // } catch (err) {
+  //   const error = new HttpError('Somthing went wrong, could not update the place.', 500)
+  //   return next(error);
+  // };
 
 
   res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
@@ -124,13 +133,11 @@ const updatePlace = async (req, res, next) => {
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
   try {
-    const deletedPlace = await PlaceSchema.findByIdAndDelete(placeId);
-
+    await PlaceSchema.findByIdAndDelete(placeId);
   } catch (err) {
     const error = new HttpError('Somthing went wrong, could delete the place', 500);
     return next(error);
   };
-
 
   res.status(200).json({ message: 'Deleted place.' });
 };
