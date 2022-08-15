@@ -1,6 +1,7 @@
 const express = require('express');
 const HttpError = require('./models/http-error');
 const mongoose  = require('mongoose');
+var cors = require('cors')
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
@@ -8,6 +9,8 @@ const usersRoutes = require('./routes/users-routes');
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
 
 app.use('/api/places',placesRoutes);
 // app.use('/api/user', usersRoutes);
@@ -29,7 +32,7 @@ app.use((error, req, res, next) => {
 
 
 mongoose.connect(
-  "mongodb+srv://shawnjoe:asdf8869@cluster0.vidsobg.mongodb.net/KKK?retryWrites=true&w=majority",
+  "mongodb+srv://shawnjoe:asdf8869@cluster0.vidsobg.mongodb.net/MERN?retryWrites=true&w=majority",
   () => {
     app.listen(5000);
     console.log('connected to database');

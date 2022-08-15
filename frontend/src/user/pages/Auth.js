@@ -21,9 +21,31 @@ const Auth = () => {
 
   const auth = useContext(AuthContext);
 
-  const placeSubmitHandler = event => {
+  const authSubmitHandler = async event => {
     event.preventDefault();
-    console.log(formState.inputs); // send this to the backend!
+    if (isLoginMode) {
+
+    } else {
+      try {
+        const response = await fetch('http://localhost:5000/api/users/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value
+          })
+        });
+        
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (err) {
+        return console.log(err);
+      };
+    };
+
     auth.login();
   };
 
@@ -43,7 +65,7 @@ const Auth = () => {
         <h2>Login Required</h2>
         <hr />
       </header>
-      <form onSubmit={placeSubmitHandler}>
+      <form onSubmit={authSubmitHandler}>
         {!isLoginMode && <Input
           element="input"
           id="name"
@@ -71,16 +93,16 @@ const Auth = () => {
           errorText="Please enter a valid password, at least 5 characters."
           onInput={inputHandler}
         />
-      
-          <Button type='submmit' disabled={!formState.isValid} onClick={() => auth.login()}>
-            {isLoginMode ? 'LOGIN' : 'SIGNUP'}
-          </Button>
-       
 
-          <Button inverse type="button" onClick={switchModeHandler} >
-            {isLoginMode ? 'SWITCH TO SIGNUP' : 'SWITCH TO LOGIN'}
-          </Button>
-     
+        <Button type='submmit' disabled={!formState.isValid} >
+          {isLoginMode ? 'LOGIN' : 'SIGNUP'}
+        </Button>
+
+
+        <Button inverse type="button" onClick={switchModeHandler} >
+          {isLoginMode ? 'SWITCH TO SIGNUP' : 'SWITCH TO LOGIN'}
+        </Button>
+
       </form>
     </Card>
   )
