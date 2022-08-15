@@ -126,7 +126,7 @@ const deletePlace = async (req, res, next) => {
   let thePlace;
   let theUser;
   try {
-    thePlace = await PlaceSchema.findById(placeId);
+    thePlace = await PlaceSchema.findById(placeId).populate({path:'creator', model: UserSchema});
     theUser =  await UserSchema.findById(thePlace.creator);
     
   } catch (err) {
@@ -134,13 +134,14 @@ const deletePlace = async (req, res, next) => {
     const error = new HttpError('a Somthing went wrong, could delete the place', 500);
     return next(error);
   };
- 
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction(); 
-    // await thePlace.creator.places.pull(thePlace);
-    await theUser.places.pull(placeId)
-    await theUser.save({ session: sess });
+    await thePlace.creator.places.pull(thePlace);
+    // await theUser.places.pull(placeId)
+    // await theUser.save({ session: sess });
+    await thePlace.creator.save({session:sess});
     await PlaceSchema.findByIdAndDelete(placeId, { session: sess });
     await sess.commitTransaction();
   } catch (err) {
