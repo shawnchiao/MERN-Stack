@@ -4,16 +4,6 @@ const { validationResult } = require('express-validator');
 
 const UserSchema = require('../models/user_schema');
 
-
-const DUMMY_USERS = [
-  {
-    id: "u1",
-    name: 'Shawn Chiao',
-    email: 'test123@gmail.com',
-    password: '12345678'
-  }
-];
-
 const getAllUsers = async (req, res, next) => {
   let allUsers;
   try {
@@ -33,7 +23,7 @@ const signUpUser = async (req, res, next) => {
     return next(error);
   };
 
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
   let existUser;
   try {
     existUser = await UserSchema.findOne({ email: email });
@@ -48,8 +38,9 @@ const signUpUser = async (req, res, next) => {
       name,
       email,
       password,
-      image: "https://i.natgeofe.com/n/9135ca87-0115-4a22-8caf-d1bdef97a814/75552.jpg",
-      places
+      places:[],
+      image: "https://i.natgeofe.com/n/9135ca87-0115-4a22-8caf-d1bdef97a814/75552.jpg"
+      
     })
   } else {
     const error = new HttpError('the email is existed, please try again', 500);

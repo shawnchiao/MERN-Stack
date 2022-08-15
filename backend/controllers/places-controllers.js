@@ -1,24 +1,11 @@
-const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const getCoordsForAddress = require('../util/location');
 const PlaceSchema = require('../models/place_schema');
+const UserSchema = require('../models/user_schema');
+const { default: mongoose } = require('mongoose');
 
-
-let DUMMY_PLACES = [
-  {
-    id: 'p1',
-    title: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516
-    },
-    address: '20 W 34th St, New York, NY 10001',
-    creator: 'u1'
-  }
-];
 
 
 const getPlaceById = async (req, res, next) => {
@@ -46,6 +33,7 @@ const getPlacesByUserId = async (req, res, next) => {
     places = await PlaceSchema.find({ creator: userId });
   } catch (err) {
     const error = new HttpError('Something went wrong, couldn nott find the place', 500);
+    return next(error);
   };
 
   if (!places || places.length === 0) {
@@ -80,9 +68,30 @@ const createPlace = async (req, res, next) => {
     address,
     creator
   });
+
+  // check if a exist userid is existing
+  let user;
   try {
-    await createdPlace.save();
+    user = await UserSchema.findById(creator);
   } catch (err) {
+    const error = new HttpError('Creating place failed, please try again.', 500)
+    return next(error);
+  };
+
+  if (!user) {
+    const error = new HttpError('Could not find user for provided id', 404)
+    return next(error);
+  }
+ 
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+
     const error = new HttpError('Creating place failed, please try again.', 500);
     return next(error);
   };
@@ -94,48 +103,49 @@ const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
-    throw new HttpError('Invalid inputs passed, please check your data', 422);
+    return next(HttpError('Invalid inputs passed, please check your data', 422));
   };
 
   const { title, description } = req.body;
   const placeId = req.params.pid;
 
   try {
-    PlaceSchema.findByIdAndUpdate(placeId, {
+    await PlaceSchema.findByIdAndUpdate(placeId, {
       title, description
     })
   } catch (err) {
     const error = new HttpError('Somthing went wrong, could not update the place.', 500)
     return next(error);
   };
-  // let updatedPlace;
-  // try {
-  //   updatedPlace = await PlaceSchema.findById(placeId);
-
-  //   updatedPlace.title = title;
-  //   updatedPlace.description = description;
-  // } catch (err) {
-  //   const error = new HttpError('Somthing went wrong, could not update the place.', 500)
-  //   return next(error);
-  // };
-
-  // try {
-  //   await updatedPlace.save();
-  // } catch (err) {
-  //   const error = new HttpError('Somthing went wrong, could not update the place.', 500)
-  //   return next(error);
-  // };
-
-
-  res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
+ 
+  res.status(200).json('updated');
 };
 
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
+  let thePlace;
+  let theUser;
   try {
-    await PlaceSchema.findByIdAndDelete(placeId);
+    thePlace = await PlaceSchema.findById(placeId);
+    theUser =  await UserSchema.findById(thePlace.creator);
+    
   } catch (err) {
-    const error = new HttpError('Somthing went wrong, could delete the place', 500);
+    console.log(err)
+    const error = new HttpError('a Somthing went wrong, could delete the place', 500);
+    return next(error);
+  };
+ 
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction(); 
+    // await thePlace.creator.places.pull(thePlace);
+    await theUser.places.pull(placeId)
+    await theUser.save({ session: sess });
+    await PlaceSchema.findByIdAndDelete(placeId, { session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err)
+    const error = new HttpError('b Somthing went wrong, could delete the place', 500);
     return next(error);
   };
 
