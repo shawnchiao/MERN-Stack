@@ -1,17 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
 import UsersList from '../components/UsersList';
-const users = () => {
-    const USERS = [
-        {
-            id: "u1",
-            name: 'Shawn Chiao',
-            image: 'https://avataaars.io/?avatarStyle=Circle&topType=ShortHairDreads02&accessoriesType=Kurt&hairColor=Blonde&facialHairType=BeardLight&facialHairColor=BlondeGolden&clotheType=BlazerSweater&eyeType=Happy&eyebrowType=AngryNatural&mouthType=Eating&skinColor=Tanned',
-            places: 3
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 
-        }        
-    ]
+const Users = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [loadedUsers, setLoadedUsers] = useState();
 
-    return <UsersList items={USERS}/>
+    useEffect(() => {
+        const getData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch('http://localhost:5000/api/users');
+                const responseData = await response.json();
+                if (!response.ok) {
+                    throw new Error(responseData.message);
+                };
+                console.log(responseData.users)
+                setLoadedUsers(responseData.users);
+            } catch (err) {
+                setError(err);
+            };
+            setIsLoading(false);
+        };
+        getData();
+    }, []);
+
+    const errorHandler = () => {
+        setError(null);
+    };
+
+    return (
+        <>
+            <ErrorModal error={error} onClear={errorHandler} />
+            {isLoading && <LoadingSpinner asOverlay />}
+            {!isLoading && loadedUsers && <UsersList items={loadedUsers} />}
+        </>
+    )
 }
 
-export default users;
+export default Users;
