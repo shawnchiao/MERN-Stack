@@ -11,7 +11,7 @@ const getAllUsers = async (req, res, next) => {
     const error = new HttpError("can't retreive the users data, please try again.", 500)
     return next(error);
   };
-  res.status(200).json({users: allUsers.map(user => user.toObject({getters:true}))});
+  res.status(200).json({ users: allUsers.map(user => user.toObject({ getters: true })) });
 };
 
 const signUpUser = async (req, res, next) => {
@@ -37,9 +37,9 @@ const signUpUser = async (req, res, next) => {
       name,
       email,
       password,
-      places:[],
+      places: [],
       image: "https://i.natgeofe.com/n/9135ca87-0115-4a22-8caf-d1bdef97a814/75552.jpg"
-      
+
     })
   } else {
     const error = new HttpError('the email is existed, please try again', 500);
@@ -53,7 +53,7 @@ const signUpUser = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json('You have singed up!');
+  res.status(201).json({ user: newUser.toObject({ getters: true }) });
 
 };
 
@@ -80,7 +80,7 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  return res.status(200).json('You have logged in!');
+  return res.status(200).json({ message: 'You have logged in!', user: existingUser.toObject({ getters: true }) });
 };
 
 exports.getAllUsers = getAllUsers;

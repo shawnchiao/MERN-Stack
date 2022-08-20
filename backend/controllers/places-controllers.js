@@ -45,6 +45,7 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 const createPlace = async (req, res, next) => {
+  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
@@ -52,7 +53,7 @@ const createPlace = async (req, res, next) => {
   };
 
   const { title, description, address, creator, image } = req.body;
-
+  
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
