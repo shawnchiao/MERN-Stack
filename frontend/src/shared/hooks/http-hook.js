@@ -11,7 +11,7 @@ const useHttpClient = () => {
       setIsLoading(true);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
-
+      console.log(url, method , body , headers )
       try {
         const response = await fetch(url, {
           method,
@@ -19,8 +19,9 @@ const useHttpClient = () => {
           headers,
           signal: httpAbortCtrl.signal
         });
-
+       
         const responseData = await response.json();
+        console.log(responseData)
 
         activeHttpRequests.current = activeHttpRequests.current.filter(
           reqCtrl => reqCtrl !== httpAbortCtrl
