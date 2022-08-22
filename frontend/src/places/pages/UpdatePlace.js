@@ -12,6 +12,7 @@ import { useForm } from '../../shared/hooks/form-hook';
 import useHttpClient from '../../shared/hooks/http-hook';
 import './PlaceForm.css';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 
 
 const UpdatePlace = () => {
@@ -97,6 +98,7 @@ const UpdatePlace = () => {
  
   return (
     <>
+       <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedPlace && (
         <form className="place-form" onSubmit={placeUpdateSubmitHandler}>
           <Input
