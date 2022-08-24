@@ -9,6 +9,7 @@
   margin-right: 1rem;
   text-decoration: none;
   display: inline-block;
+  min-width: 200px;
 }
 
 .button:focus {

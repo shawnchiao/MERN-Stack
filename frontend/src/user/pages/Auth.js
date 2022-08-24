@@ -13,6 +13,7 @@ import {
 import { useForm } from '../../shared/hooks/form-hook';
 import  useHttpClient  from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth-context';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import './Auth.css';
 
 const Auth = () => {
@@ -39,7 +40,8 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: undefined
+          name: undefined,
+          image : undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -50,6 +52,10 @@ const Auth = () => {
           name: {
             value: '',
             isValid: false
+          },
+          image: {
+              value: null,
+              isValid : false
           }
         },
         false
@@ -91,10 +97,13 @@ const Auth = () => {
           }
         );
 
-        auth.login();
+        auth.login(responseData.user.id);
       } catch (err) {}
     }
   };
+
+  console.log(formState.inputs)
+
 
   return (
     <React.Fragment>
@@ -115,6 +124,8 @@ const Auth = () => {
               onInput={inputHandler}
             />
           )}
+          {!isLoginMode && <ImageUpload id="image" center onInput={inputHandler}/>}
+       
           <Input
             element="input"
             id="email"
