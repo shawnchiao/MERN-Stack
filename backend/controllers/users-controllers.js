@@ -22,8 +22,8 @@ const signUpUser = async (req, res, next) => {
     return next(error);
   };
 
-  const { name, email, password } = req.body;
-  
+  const { name, email, password, image } = req.body;
+
   let existUser;
   try {
     existUser = await UserSchema.findOne({ email: email });
@@ -39,8 +39,7 @@ const signUpUser = async (req, res, next) => {
       email,
       password,
       places: [],
-      image: 'http://localhost:5000/' + req.file.path
-
+      image: req.file && !image ? 'http://localhost:5000/' + req.file.path : image
     })
   } else {
     const error = new HttpError('the email is existed, please try again', 500);
