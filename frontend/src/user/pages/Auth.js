@@ -124,6 +124,8 @@ const Auth = () => {
           )}
           {!isLoginMode && (
           <ImageUpload 
+            circle
+            randomButton
             id="image" 
             center 
             onInput={inputHandler}

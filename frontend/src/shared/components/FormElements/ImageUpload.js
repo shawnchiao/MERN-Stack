@@ -60,12 +60,13 @@ const ImageUpload = props => {
         onChange={pickedHandler}
       />
       <div className={`image-upload ${props.center && "center"}`}>
-        <div className='image-upload__preview'>
+        <div className={`image-upload__preview ${props.circle && "circle"}`}>
          {previewUrl && <img src={previewUrl} alt="Preview" /> }      
         </div>
         <Button type="button" onClick={pickImageHandler}>PICK IMAGE</Button>
-        <Button inverse  type="button" onClick={random}>RANDOM</Button>
+        {props.randomButton && <Button inverse  type="button" onClick={random}>RANDOM</Button>}
       </div>
+      {!isValid && <p>{props.errorText}</p>}
     </div>
   );
 };
