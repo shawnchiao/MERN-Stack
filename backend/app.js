@@ -13,7 +13,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+app.use('/uploads/images/users', express.static(path.join('uploads', 'images','users')));
+app.use('/uploads/images/places', express.static(path.join('uploads', 'images','places')));
 
 app.use(cors());
 

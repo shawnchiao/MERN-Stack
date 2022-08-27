@@ -3,14 +3,14 @@ const router = express.Router();
 const { check } = require('express-validator');
 
 const usersControllers = require('../controllers/users-controllers');
-const fileUpload = require('../middleware/file-upload');
+const fileUploadForUsers = require('../middleware/file-upload-for-users');
 
 
 router.get('/', usersControllers.getAllUsers);
 
 router.post(
   '/signup',
-  fileUpload.single('image'),
+  fileUploadForUsers.single('image'),
 [
   check('name').notEmpty(),
   check('email').normalizeEmail().isEmail(),

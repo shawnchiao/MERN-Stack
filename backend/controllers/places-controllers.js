@@ -52,7 +52,7 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError('Invalid inputs passed, please check your data', 422));
   };
 
-  const { title, description, address, creator, image } = req.body;
+  const { title, description, address, creator} = req.body;
   
   let coordinates;
   try {
@@ -64,7 +64,7 @@ const createPlace = async (req, res, next) => {
   const createdPlace = new PlaceSchema({
     title,
     description,
-    image,
+    image: 'http://localhost:5000/' + req.file.path,
     location: coordinates,
     address,
     creator
