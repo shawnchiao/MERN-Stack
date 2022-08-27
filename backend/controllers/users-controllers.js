@@ -23,6 +23,7 @@ const signUpUser = async (req, res, next) => {
   };
 
   const { name, email, password } = req.body;
+  
   let existUser;
   try {
     existUser = await UserSchema.findOne({ email: email });
@@ -38,7 +39,7 @@ const signUpUser = async (req, res, next) => {
       email,
       password,
       places: [],
-      image: "https://i.natgeofe.com/n/9135ca87-0115-4a22-8caf-d1bdef97a814/75552.jpg"
+      image: 'http://localhost:5000/' + req.file.path
 
     })
   } else {

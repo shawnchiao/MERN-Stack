@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import Button from './Button';
+import {randomDefaultColor} from './randomDefaultColor';
 import './ImageUpload.css';
 
 const ImageUpload = props => {
@@ -21,7 +22,7 @@ const ImageUpload = props => {
 
   const random = () => {
     const randomNumber = Math.round(1000*Math.random());
-    const url = `https://avatars.dicebear.com/api/avataaars/:seed${randomNumber}.svg`
+    const url = `https://avatars.dicebear.com/api/avataaars/:seed${randomNumber}.svg?background=${randomDefaultColor()}`
     setPreviewUrl(url);
     const randomPhoto = url
     props.onInput(props.id, randomPhoto, true)
