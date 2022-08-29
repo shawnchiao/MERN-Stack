@@ -1,5 +1,6 @@
 const HttpError = require('../models/http-error')
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = require('../models/user_schema');
 
@@ -27,17 +28,26 @@ const signUpUser = async (req, res, next) => {
   let existUser;
   try {
     existUser = await UserSchema.findOne({ email: email });
-    console.log(existUser);
   } catch (err) {
     const error = new HttpError('Something went wrong, please try again', 500);
     return next(error);
   }
+  let hashedPassword;
+  try{
+    hashedPassword = await bcrypt.hash(password, 12);
+  } 
+  catch (err) {
+    const error = HttpError('Could not create user, please try again.', 5000);
+    return next(error);
+  };
+
+
   let newUser;
   if (!existUser) {
     newUser = new UserSchema({
       name,
       email,
-      password,
+      password: hashedPassword,
       places: [],
       image: req.file && !image ? 'http://localhost:5000/' + req.file.path : image
     })
@@ -72,12 +82,29 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser ) {
     const error = new HttpError(
-      'Invalid credentials, could not log you in.',
+      'You have not signed up yet, please sign up an account',
       401
     );
     return next(error);
+  }
+
+  let isValidPasspord;
+  try {
+    isValidPasspord = await bcrypt.compare(password, existingUser.password);
+  } catch(err) {
+    const error = new HttpError(
+      "Couldn't log in now, please try again.",
+      500
+    );
+    return next(error);
+  };
+
+  if (! isValidPasspord) {
+    const error = new HttpError(
+      'Invalid credentials, could not log you in.',
+      401)
   }
 
   return res.status(200).json({ message: 'You have logged in!', user: existingUser.toObject({ getters: true }) });
