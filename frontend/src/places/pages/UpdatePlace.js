@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
@@ -13,11 +13,13 @@ import useHttpClient from '../../shared/hooks/http-hook';
 import './PlaceForm.css';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import { AuthContext } from '../../shared/context/auth-context';
 
 
 const UpdatePlace = () => {
   const [loadedPlace, setLoadedPlace] = useState();
   const { error, clearError, sendRequest, isLoading } = useHttpClient();
+  const auth = useContext(AuthContext);
   const navigate =useNavigate();
   const placeId = useParams().placeId;
 
@@ -71,7 +73,8 @@ const UpdatePlace = () => {
           description: formState.inputs.description.value
         }),
         {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + auth.token
         }
       );
       navigate('/')

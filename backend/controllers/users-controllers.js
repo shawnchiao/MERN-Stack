@@ -1,6 +1,7 @@
 const HttpError = require('../models/http-error')
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = require('../models/user_schema');
 
@@ -33,11 +34,11 @@ const signUpUser = async (req, res, next) => {
     return next(error);
   }
   let hashedPassword;
-  try{
+  try {
     hashedPassword = await bcrypt.hash(password, 12);
-  } 
+  }
   catch (err) {
-    const error = HttpError('Could not create user, please try again.', 5000);
+    const error = HttpError('Could not create user, please try again.', 500);
     return next(error);
   };
 
@@ -62,8 +63,21 @@ const signUpUser = async (req, res, next) => {
     const error = new HttpError('Something went wrong, could not create the user', 500);
     return next(error);
   }
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: newUser.id, email: newUser.email },
+      "this_is_my_secret_key!",
+      { expiresIn: '1h' }
+    )
+  } catch (err) {
+    const error = new HttpError('Something went wrong, could not create the user', 500);
+    return next(error);
+  };
 
-  res.status(201).json({ user: newUser.toObject({ getters: true }) });
+  res
+    .status(201)
+    .json({ userId: newUser.id, email: newUser.email, token: token });
 
 };
 
@@ -82,7 +96,7 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  if (!existingUser ) {
+  if (!existingUser) {
     const error = new HttpError(
       'You have not signed up yet, please sign up an account',
       401
@@ -93,7 +107,7 @@ const login = async (req, res, next) => {
   let isValidPasspord;
   try {
     isValidPasspord = await bcrypt.compare(password, existingUser.password);
-  } catch(err) {
+  } catch (err) {
     const error = new HttpError(
       "Couldn't log in now, please try again.",
       500
@@ -101,13 +115,35 @@ const login = async (req, res, next) => {
     return next(error);
   };
 
-  if (! isValidPasspord) {
+  if (!isValidPasspord) {
     const error = new HttpError(
       'Invalid credentials, could not log you in.',
       401)
   }
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: existingUser.id, email: existingUser.email },
+      "this_is_my_secret_key!",
+      { expiresIn: '1h' }
+    )
+  } catch (err) { 
+    const error = new HttpError(
+      "Couldn't log in now, please try again.",
+      500
+    );
+    return next(error);
+  };
 
-  return res.status(200).json({ message: 'You have logged in!', user: existingUser.toObject({ getters: true }) });
+  res
+    .status(200)
+    // .json({ 
+    //   message: 'You have logged in!', user: existingUser.toObject({ getters: true }) });
+    .json({ 
+        userId: existingUser.id,
+        email: existingUser.email,
+        token:token
+       });
 };
 
 exports.getAllUsers = getAllUsers;

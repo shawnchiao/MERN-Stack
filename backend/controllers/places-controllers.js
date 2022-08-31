@@ -111,6 +111,18 @@ const updatePlace = async (req, res, next) => {
 
   const { title, description } = req.body;
   const placeId = req.params.pid;
+  let placeToBeUpdated;
+  try {
+    placeToBeUpdated = await PlaceSchema.findById(placeId)
+  } catch (err) {
+    const error = new HttpError('Somthing went wrong, could not update the place.', 500)
+    return next(error);
+  };
+
+  if (placeToBeUpdated.creator.toString() !== req.userData.userId) {
+    const error = new HttpError('You are not authorized to edit this place', 401)
+    return next(error);
+  };
 
   try {
     await PlaceSchema.findByIdAndUpdate(placeId, {
@@ -137,6 +149,11 @@ const deletePlace = async (req, res, next) => {
     const error = new HttpError('a Somthing went wrong, could delete the place', 500);
     return next(error);
   };
+
+  if (thePlace.creator.id !== req.userData.userId) {
+    const error = new HttpError('You are not authorized to delete this place.', 401);
+    return next(error);
+  }
 
   const imagePath = thePlace.image.replace("http://localhost:5000", "");
 

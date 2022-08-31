@@ -47,7 +47,7 @@ const ImageUpload = props => {
     }
     props.onInput(props.id, pickedFile, fileIsValid )
   }
-  console.log(previewUrl)
+
 
   return (
     <div className='form-control'>
@@ -61,7 +61,7 @@ const ImageUpload = props => {
       />
       <div className={`image-upload ${props.center && "center"}`}>
         <div className={`image-upload__preview ${props.circle && "circle"}`}>
-         {previewUrl && <img src={previewUrl} alt="Preview" /> }      
+         {previewUrl && <img src={previewUrl} alt="Preview" className={ props.circle && 'circle'} /> }      
         </div>
         <Button type="button" onClick={pickImageHandler}>PICK IMAGE</Button>
         {props.randomButton && <Button inverse  type="button" onClick={random}>RANDOM</Button>}
