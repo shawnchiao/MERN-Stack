@@ -42,7 +42,7 @@ app.use((error, req, res, next) => {
 
 
 mongoose.connect(
-  "mongodb+srv://shawnjoe:asdf8869@cluster0.vidsobg.mongodb.net/MERN?retryWrites=true&w=majority",
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.vidsobg.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
   () => {
     app.listen(5000);
     console.log('connected to database');
