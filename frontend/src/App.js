@@ -16,7 +16,7 @@ import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
 
 function App() {
-  const { token, userId, tokenExpirationState, login, logout } = useAuth();
+  const { token, userId, login, logout } = useAuth();
 
   let routes;
 

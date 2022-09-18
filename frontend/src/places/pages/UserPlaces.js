@@ -19,7 +19,7 @@ const UserPlaces = () => {
 
   useEffect(()=>{
     const getData = async () => {
-      const response = await sendRequest(`http://localhost:5000/api/places/user/${userId}`);
+      const response = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/user/${userId}`);
       setPlaces(response.places);
     };
     getData();

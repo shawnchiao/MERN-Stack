@@ -39,7 +39,7 @@ export const useAuth = () => {
     } else {
       clearTimeout(logoutTimer);
     }
-  }, [token, logout]);
+  }, [token, logout, tokenExpirationState]);
 
   useLayoutEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("userData"));
@@ -56,5 +56,5 @@ export const useAuth = () => {
     }
   }, [login]);
 
-  return { token, userId, tokenExpirationState, login, logout };
+  return { token, userId, login, logout };
 };
